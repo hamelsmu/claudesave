@@ -2,6 +2,9 @@
 
 > A Chrome extension that saves conversations with Claude to gists.
 
+## Demo
+
+https://github.com/user-attachments/assets/c0d64e6d-5649-451b-9e34-f8a24e90887e
 
 
 ## Usage

@@ -10,12 +10,16 @@
 
 Obtain a [personal access token (PAT)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) with the `gist` scope.
 
-### Step 1: Save your PAT
+### Step 2: Install the extension
+
+Follow [these steps](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked) to load an unpacked extension.  Select the root of this repository as the extension directory.
+
+### Step 3: Save your PAT
 After installing the extension, you can click the extension icon to save your PAT.
 
 > ![screenshot](screenshots/3_claudesave.png)
 
-### Step 2: Save your conversation
+### Step 4: Save your conversation
 
 When you are ready to save your conversation, click on the share button with the github icon.
 

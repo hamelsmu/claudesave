@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClaudeSave</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        body {
+            width: 400px;
+            height: 800px;
+            padding: 1rem;
+        }
+        #status-card {
+            margin-top: 1rem;
+        }
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+        .title-text {
+            margin: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <div class="title-container">
+            <img src="anthropic.png" alt="Anthropic logo" class="logo">
+            <h2 class="title-text">Claudesave</h2>
+        </div>
+        <p>Paste your <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic">GitHub Personal Access Token</a> scoped to "gist" and click the "Save" button.</p>
+        <form>
+            <input type="password" id="pat" placeholder="Paste your GitHub PAT here" required>
+            <button type="button" id="save">Save</button>
+        </form>
+        <hr>
+        <h3>Logs</h3>
+        <p>View the logs of the last save attempt.</p>
+        <article id="status-card">
+            <div id="status" aria-live="polite"></div>
+        </article>
+    </main>
+    <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{
+    "manifest_version": 3,
+    "name": "ClaudeSave",
+    "version": "1.0",
+    "description": "A Chrome extension that saves conversations with Claude to gists.",
+    "permissions": ["storage", "tabs"],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_title": "ClaudeSave",
+        "default_popup": "popup.html"
+    },
+    "content_scripts": [
+        {   
+            "run_at": "document_end",
+            "matches": ["https://claude.ai/chat/*"],
+            "js": ["content.js"]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": ["anthropic.png"],
+            "matches": ["<all_urls>"]
+        }
+    ],
+    "icons": {
+        "128": "128.png"
+    }
+}

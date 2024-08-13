@@ -44,16 +44,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 chrome.storage.sync.get(['pat'], (result) => {
                 const pat = result.pat;
                 if (!pat) {
-                    chrome.storage.local.set({log_url: '', log_status: 'error', log_message: 'No PAT found'});
+                    const msg = 'No PAT found, please set one in the extension by clicking on the extension icon';
+                    chrome.storage.local.set({log_url: '', log_status: 'error', log_message: msg});
+                    sendResponse({log_status: 'error', log_message: msg });
                     return true;
                 }
                 saveToGist(request.markdown, pat, pageURL)
                     .then(result => {
                         chrome.tabs.create({ url: result.url });
                         chrome.storage.local.set({log_url: result.url, log_status: 'success', log_message: 'Gist created'});
+                        sendResponse({log_status: 'success'});
                     })
                     .catch(error => {
+                        const msg = error.message + ' Please make sure your PAT has the correct permissions to create gists.';
                         chrome.storage.local.set({log_url: '', log_status: 'error', log_message: error.message});
+                        sendResponse({log_status: 'error', log_message: msg});
                 });
             })
         })

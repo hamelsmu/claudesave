@@ -47,16 +47,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 chrome.storage.sync.get(['pat'], (result) => {
                 const pat = result.pat;
                 if (!pat) {
-                    sendResponse({ status: 'error', message: 'No PAT found', url: '' });
+                    chrome.storage.local.set({log_url: '', log_status: 'error', log_message: 'No PAT found'});
                     return true;
                 }
                 saveToGist(request.markdown, pat, pageURL)
                     .then(result => {
                         chrome.tabs.create({ url: result.url });
-                        sendResponse({status: result.status, url: result.url });
+                        chrome.storage.local.set({log_url: result.url, log_status: 'success', log_message: 'Gist created'});
                     })
                     .catch(error => {
-                        sendResponse({ status: 'error', message: error.message, url: '' });
+                        chrome.storage.local.set({log_url: '', log_status: 'error', log_message: error.message});
                 });
             })
         })

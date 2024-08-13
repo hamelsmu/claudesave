@@ -32,9 +32,6 @@ function saveToGist(markdown, pat, pageURL) {
         console.log('Gist created:', result.html_url);
         return { status: 'success', url: result.html_url };
     })
-    .catch(error => {
-        throw error;
-    });
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -47,19 +44,25 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 chrome.storage.sync.get(['pat'], (result) => {
                 const pat = result.pat;
                 if (!pat) {
-                    sendResponse({ status: 'error', message: 'No PAT found', url: '' });
+                    chrome.storage.local.set({log_url: '', log_status: 'error', log_message: 'No PAT found'});
                     return true;
                 }
                 saveToGist(request.markdown, pat, pageURL)
                     .then(result => {
                         chrome.tabs.create({ url: result.url });
-                        sendResponse({status: result.status, url: result.url });
+                        chrome.storage.local.set({log_url: result.url, log_status: 'success', log_message: 'Gist created'});
                     })
                     .catch(error => {
-                        sendResponse({ status: 'error', message: error.message, url: '' });
+                        chrome.storage.local.set({log_url: '', log_status: 'error', log_message: error.message});
                 });
             })
         })
         return true;
+    }
+});
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    if (changeInfo.url && changeInfo.url.startsWith('https://claude.ai/chat/')) {
+        chrome.tabs.sendMessage(tabId, {action: "checkAndAddShareButton"});
     }
 });

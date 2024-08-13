@@ -14,7 +14,7 @@
     "content_scripts": [
         {   
             "run_at": "document_end",
-            "matches": ["https://claude.ai/chat/*"],
+            "matches": ["https://claude.ai/*"],
             "js": ["content.js"]
         }
     ],

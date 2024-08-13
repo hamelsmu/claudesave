@@ -66,16 +66,12 @@ function addShareButton() {
         });
         buttonContainer.appendChild(shareButton);
         console.log("Share button added");
-    } else if (!buttonContainer) {
-        console.log("Button container not found");
-    } else {
-        console.log("Share button already exists");
     }
 }
 
 function checkAndAddShareButton() {
     if (window.location.href.startsWith('https://claude.ai/chat/')) {
-        const maxAttempts = 10;
+        const maxAttempts = 15;
         let attempts = 0;
 
         function tryAddButton() {
@@ -86,7 +82,7 @@ function checkAndAddShareButton() {
                     setTimeout(tryAddButton, 1000);
                 }
             } else {
-                console.log("Failed to add share button after maximum attempts");
+                console.log("Failed to add share button after maximum attempts")
             }
         }
 
@@ -94,19 +90,10 @@ function checkAndAddShareButton() {
     }
 }
 
-// Initial check when the script loads
 checkAndAddShareButton();
 
-// Set up a MutationObserver to watch for URL changes
-let lastUrl = location.href;
-new MutationObserver(() => {
-    const url = location.href;
-    if (url !== lastUrl) {
-        lastUrl = url;
-        console.log("URL changed to:", url);
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.action === "checkAndAddShareButton") {
         checkAndAddShareButton();
     }
-}).observe(document, {subtree: true, childList: true});
-
-// Also check periodically (every 2 seconds) in case the MutationObserver misses something
-setInterval(checkAndAddShareButton, 2000);
+});

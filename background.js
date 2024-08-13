@@ -32,9 +32,6 @@ function saveToGist(markdown, pat, pageURL) {
         console.log('Gist created:', result.html_url);
         return { status: 'success', url: result.html_url };
     })
-    .catch(error => {
-        throw error;
-    });
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -61,5 +58,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             })
         })
         return true;
+    }
+});
+
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    if (changeInfo.url && changeInfo.url.startsWith('https://claude.ai/chat/')) {
+        chrome.tabs.sendMessage(tabId, {action: "checkAndAddShareButton"});
     }
 });

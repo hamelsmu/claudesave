@@ -2,6 +2,11 @@
 
 > A Chrome extension that saves conversations with Claude to gists.
 
+
+## Installation
+
+Follow [these instructions](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked) to load an "unpacked extension" targeting the root of this repo.
+
 ## Demo
 
 https://github.com/user-attachments/assets/c0d64e6d-5649-451b-9e34-f8a24e90887e

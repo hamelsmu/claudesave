@@ -64,7 +64,7 @@ function convertPayloadToMarkdown(payload) {
                 }
             });
         }
-    });
+    }); 
     return bits.join("\n");
 }
 

@@ -54,57 +54,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     }
 });
 
-
-function createBanner(message, type = 'error') {
-    const banner = document.createElement('article');
-    banner.className = type === 'error' ? 'error' : 'success';
-    banner.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        margin: 0;
-        padding: 1rem;
-        text-align: center;
-        z-index: 9999;
-        animation: slideDown 0.5s ease-out;
-    `;
-    banner.innerHTML = `<p>${message}</p>`;
-    document.body.prepend(banner);
-
-    // Set a timeout to remove the banner after 8 seconds
-    setTimeout(() => {
-        banner.style.animation = 'slideUp 0.5s ease-in';
-        setTimeout(() => banner.remove(), 500);
-    }, 8000);
-}
-
 function extractUUID(url) {
     const urlParts = url.split('https://claude.ai/chat/');
     const lastPart = urlParts[1];
     return lastPart.split('?')[0];
 }
-
-// Add these styles to your existing <style> tag in popup.html
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideDown {
-        from { transform: translateY(-100%); }
-        to { transform: translateY(0); }
-    }
-    @keyframes slideUp {
-        from { transform: translateY(0); }
-        to { transform: translateY(-100%); }
-    }
-    article.error {
-        background-color: #d30c00;
-        border-color: #d30c00;
-        color: white;
-    }
-    article.success {
-        background-color: #2ecc40;
-        border-color: #2ecc40;
-        color: white;
-    }
-`;
-document.head.appendChild(style);

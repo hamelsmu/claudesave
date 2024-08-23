@@ -17,7 +17,7 @@
         {   
             "run_at": "document_end",
             "matches": ["https://claude.ai/*"],
-            "js": ["content.js"]
+            "js": ["utils/banner.js", "content.js"]
         }
     ],
     "web_accessible_resources": [

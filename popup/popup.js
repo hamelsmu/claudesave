@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     saveButton.addEventListener('click', function() {
         const pat = document.getElementById('pat');
         chrome.storage.sync.set({'pat': `${pat.value}`});
+        createBanner('PAT saved', 'success');
     });
 
     // Function to update the logs

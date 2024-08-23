@@ -1,48 +1,3 @@
-function extractMarkdownConversation() {
-    function extractTextFromElement(element) {
-        let textContent = '';
-        element.childNodes.forEach(node => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                textContent += node.textContent;
-            } else if (node.nodeType === Node.ELEMENT_NODE) {
-                if (node.tagName === 'STRONG' || node.tagName === 'B') {
-                    textContent += `**${extractTextFromElement(node)}**`;
-                } else if (node.tagName === 'EM' || node.tagName === 'I') {
-                    textContent += `*${extractTextFromElement(node)}*`;
-                } else if (node.tagName === 'A') {
-                    textContent += `[${extractTextFromElement(node)}](${node.href})`;
-                } else if (node.tagName === 'CODE' && node.parentNode.tagName !== 'PRE') {
-                    textContent += `\`${extractTextFromElement(node)}\``;
-                } else if (node.tagName === 'PRE') {
-                    const codeElement = node.querySelector('code');
-                    const languageClass = codeElement ? codeElement.className.match(/language-(\w+)/) : null;
-                    const language = languageClass ? languageClass[1] : '';
-                    textContent += `\n\`\`\`${language}\n${codeElement.textContent.trim()}\n\`\`\`\n`;
-                } else if (node.tagName === 'BR') {
-                    textContent += '\n';
-                } else if (node.tagName === 'P') {
-                    textContent += `${extractTextFromElement(node)}\n\n`;
-                } else {
-                    textContent += extractTextFromElement(node);
-                }
-            }
-        });
-        return textContent;
-    }
-
-    const messages = document.querySelectorAll('.font-user-message, .font-claude-message');
-    let markdown = '';
-
-    messages.forEach(message => {
-        const isUser = message.classList.contains('font-user-message');
-        const role = isUser ? '## Human\n' : '## AI\n';
-        const content = extractTextFromElement(message).trim();
-        markdown += `${role}${content}\n\n`;
-    });
-
-    return markdown;
-};
-
 function addShareButton() {
     let buttonContainer = document.querySelector('.flex.min-w-0.items-center.max-md\\:text-sm');
     
@@ -61,15 +16,13 @@ function addShareButton() {
         
         shareButton.prepend(gitHubIcon);
         shareButton.addEventListener('click', function() {
-            const markdown = extractMarkdownConversation();
-            chrome.runtime.sendMessage({action: "saveToGistAPI", markdown: markdown}, function(response) {
+            chrome.runtime.sendMessage({action: "saveToGistAPI", uuid: extractUUID(window.location.href)}, function(response) {
                 if (response && response.log_status === 'error') {
                     createBanner(`Error: ${response.log_message}`);
                 }
             });
         });
         buttonContainer.appendChild(shareButton);
-        console.log("Share button added");
     }
 }
 
@@ -89,7 +42,6 @@ function checkAndAddShareButton() {
                 console.log("Failed to add share button after maximum attempts")
             }
         }
-
         tryAddButton();
     }
 }
@@ -125,6 +77,12 @@ function createBanner(message, type = 'error') {
         banner.style.animation = 'slideUp 0.5s ease-in';
         setTimeout(() => banner.remove(), 500);
     }, 8000);
+}
+
+function extractUUID(url) {
+    const urlParts = url.split('https://claude.ai/chat/');
+    const lastPart = urlParts[1];
+    return lastPart.split('?')[0];
 }
 
 // Add these styles to your existing <style> tag in popup.html

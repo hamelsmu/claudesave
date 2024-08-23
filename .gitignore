@@ -1,2 +1,5 @@
 # ignore stuff for chrome extensiosn
 extension.zip
+
+# ignore DS_Store from Macs
+.DS_Store

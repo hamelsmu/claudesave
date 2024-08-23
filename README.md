@@ -16,7 +16,7 @@ https://github.com/user-attachments/assets/c0d64e6d-5649-451b-9e34-f8a24e90887e
 
 ### Step 1: Obtain a PAT
 
-Obtain a [personal access token (PAT)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) with the `gist` scope.
+Obtain a [personal access token (PAT)](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) with the `gist` scope. (Use the 'Tokens (classic)' option in the interface).
 
 ### Step 2: Install the extension
 

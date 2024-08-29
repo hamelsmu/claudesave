@@ -1,6 +1,6 @@
 # ClaudeSave
 
-> A Chrome extension that saves conversations with Claude to gists.
+> A Chrome extension that saves conversations with Claude to GitHubGists or your clipboard.
 
 ## Demo
 
@@ -26,6 +26,6 @@ After installing the extension, you can click the extension icon to save your PA
 
 When you are ready to save your conversation, click on the share button with the github icon.
 
-> ![screenshot](images/screenshots/1_claudesave.png)
+> ![screenshot](images/screenshots/1_claudesave_buttons.png)
 
 If you have saved your PAT correctly, a new tab will open with a gist containing your conversation.  You can inspect the logs by clicking on the extension icon and scrolling down to logs to check if there are any issues with your PAT.

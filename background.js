@@ -2,10 +2,10 @@ import { convertPayloadToMarkdown } from './utils/resp2md.js';
 import { saveToGist } from './utils/github.js';
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request.action === "saveToGistAPI") {
+    if (request.action === "saveToGistAPI" || request.action === "SaveToClipboard") {
         chrome.storage.sync.get(['pat'], (result) => {
             const pat = result.pat;
-            if (!pat) {
+            if (!pat && request.action === "saveToGistAPI") {
                 const msg = 'No PAT found, please set one in the extension by clicking on the extension icon';
                 chrome.storage.local.set({log_url: '', log_status: 'error', log_message: msg});
                 sendResponse({log_status: 'error', log_message: msg });
@@ -14,27 +14,31 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             chrome.storage.local.get([`chat_${request.uuid}`], (result) => {
                 const payload = result[`chat_${request.uuid}`];
                 if (!payload) {
-                    const msg = 'No payload found, try refreshing the page and saving the conversation again';
+                    const msg = 'No payload found, try refreshing the page.';
                     chrome.storage.local.set({log_url: '', log_status: 'error', log_message: msg});
                     sendResponse({log_status: 'error', log_message: msg });
                     return true;
                 }
                 else {
                     let markdown = convertPayloadToMarkdown(payload);
-                    saveToGist(markdown, pat, `https://claude.ai/chat/${request.uuid}`)
-                    .then(result => {
-                        chrome.tabs.create({ url: result.url });
-                        chrome.storage.local.set({log_url: result.url, log_status: 'success', log_message: 'Gist created'});
-                        sendResponse({log_status: 'success'});
-                    })
-                    .catch(error => {
-                        const msg = error.message + ' Please make sure your PAT has the correct permissions to create gists.';
-                        chrome.storage.local.set({log_url: '', log_status: 'error', log_message: error.message});
-                        sendResponse({log_status: 'error', log_message: msg});
-                    });
+                    if (request.action === "saveToGistAPI") {
+                        saveToGist(markdown, pat, `https://claude.ai/chat/${request.uuid}`)
+                        .then(result => {
+                            chrome.tabs.create({ url: result.url });
+                            chrome.storage.local.set({log_url: result.url, log_status: 'success', log_message: 'Gist created'});
+                            sendResponse({log_status: 'success'});
+                        })
+                        .catch(error => {
+                            const msg = error.message + ' Please make sure your PAT has the correct permissions to create gists.';
+                            chrome.storage.local.set({log_url: '', log_status: 'error', log_message: error.message});
+                            sendResponse({log_status: 'error', log_message: msg});
+                        });
+                    } else if (request.action === "SaveToClipboard") {
+                        sendResponse({log_status: 'success', log_message: 'Copied to clipboard', markdown: markdown});
+                    }
                 }
             });
-        })
+        });
         return true;
     }
 });

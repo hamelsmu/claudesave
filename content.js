@@ -17,7 +17,8 @@ function createButton(icon, text, action) {
             if (response && response.log_status === 'error') {
                 createBanner(`Error: ${response.log_message}`);
             } else if (response && response.log_status === 'success' && action === 'SaveToClipboard') {
-                createBanner('Copied to clipboard!');
+                navigator.clipboard.writeText(response.markdown);
+                createBanner('Copied to clipboard!', 'success', 1000);
             }
         });
     });

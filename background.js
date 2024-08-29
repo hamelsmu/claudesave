@@ -34,14 +34,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                             sendResponse({log_status: 'error', log_message: msg});
                         });
                     } else if (request.action === "SaveToClipboard") {
-                        navigator.clipboard.writeText(markdown).then(() => {
-                            chrome.storage.local.set({log_status: 'success', log_message: 'Copied to clipboard'});
-                            sendResponse({log_status: 'success', log_message: 'Copied to clipboard'});
-                        }).catch(err => {
-                            console.error('Failed to copy text: ', err);
-                            chrome.storage.local.set({log_status: 'error', log_message: 'Failed to copy to clipboard'});
-                            sendResponse({log_status: 'error', log_message: 'Failed to copy to clipboard'});
-                        });
+                        sendResponse({log_status: 'success', log_message: 'Copied to clipboard', markdown: markdown});
                     }
                 }
             });

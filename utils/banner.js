@@ -1,4 +1,4 @@
-function createBanner(message, type = 'error') {
+function createBanner(message, type = 'error', timeout = 8000) {
     const banner = document.createElement('article');
     banner.className = type === 'error' ? 'error' : 'success';
     banner.style.cssText = `
@@ -19,7 +19,7 @@ function createBanner(message, type = 'error') {
     setTimeout(() => {
         banner.style.animation = 'slideUp 0.5s ease-in';
         setTimeout(() => banner.remove(), 500);
-    }, 8000);
+    }, timeout);
 }
 
 // This adds the banner styles to the page

@@ -7,7 +7,7 @@ function parseInput(input) {
     }
 }
   
-  // Function to escape HTML special characters
+  // Function to escape HTML special characters only within code blocks
 function escapeHtml(str) {
     const entityMap = {
       "&": "&amp;",
@@ -32,35 +32,52 @@ function formatDate(dateString) {
   
   // Function to process a single message and its descendants
 function processMessage(message, payload, bits) {
+    console.log("Processing message:", {
+        uuid: message.uuid,
+        sender: message.sender,
+        hasContent: Boolean(message.content),
+        hasText: Boolean(message.text),
+        hasAttachments: Boolean(message.attachments?.length),
+        attachmentsCount: message.attachments?.length || 0
+    });
+
+    // If the previous item was a code block, ensure it's closed
+    if (bits.length > 0 && bits[bits.length - 1].startsWith('```')) {
+        bits.push('```');
+    }
+
     let emoji = message.sender === 'human' ? '🧑' : (message.sender === 'assistant' ? '🤖' : '👤');
     
     bits.push(`## ${emoji} ${message.sender} _(${formatDate(message.created_at)})_`);
     
-    // Handle new content array structure
-    if (message.content) {
-        message.content.forEach((content) => {
+    // Handle content array if it exists
+    if (message.content && message.content.length > 0) {
+        message.content.forEach(content => {
             if (content.type === 'text') {
-                // Strip out antArtifact tags and just keep the content
-                let text = content.text
-                    .replace(/<antArtifact[^>]*>/g, '')
-                    .replace(/<\/antArtifact>/g, '');
-                bits.push(text);
+                console.log("Adding content text:", content.text.substring(0, 50) + "...");
+                bits.push(content.text);
             }
         });
+    } else if (message.text) {
+        console.log("Adding message text:", message.text.substring(0, 50) + "...");
+        bits.push(message.text);
     }
 
-    // Handle extracted_content from attachments
-    if (message.attachments) {
+    // Only process attachments if they exist AND have length > 0
+    if (message.attachments?.length > 0) {
         message.attachments.forEach((attachment) => {
             if (attachment.extracted_content) {
+                console.log("Adding attachment content");
                 bits.push("```");
-                bits.push(attachment.extracted_content);
+                bits.push(escapeHtml(attachment.extracted_content));
                 bits.push("```");
             }
         });
     }
 
-    // Find the most recent child message
+    console.log("Current bits array:", bits.slice(-3));
+
+    // Find and process child messages
     const childMessages = payload.chat_messages.filter(m => m.parent_message_uuid === message.uuid);
     if (childMessages.length > 0) {
         const mostRecentChild = childMessages.reduce((latest, current) => {
@@ -68,6 +85,65 @@ function processMessage(message, payload, bits) {
         });
         processMessage(mostRecentChild, payload, bits);
     }
+}
+
+// Add this new function
+function cleanupMarkdown(markdown) {
+    const lines = markdown.split('\n');
+    const cleanedLines = [];
+    let inCodeBlock = false;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        // More permissive regex to catch variations of message headers
+        const isMessageHeader = line.match(/^## [🧑🤖👤].*(human|assistant|system).*_\(.*\)_$/i);
+        
+        if (line === '```') {
+            if (inCodeBlock) {
+                // We're ending a code block
+                cleanedLines.push(line);
+                inCodeBlock = false;
+            } else {
+                // We're starting a code block
+                // Check if next lines contain message headers
+                let peekIndex = i + 1;
+                let foundHeader = false;
+                while (peekIndex < lines.length && lines[peekIndex].trim() !== '```') {
+                    if (lines[peekIndex].trim().match(/^## [🧑🤖👤].*(human|assistant|system).*_\(.*\)_$/i)) {
+                        foundHeader = true;
+                        break;
+                    }
+                    peekIndex++;
+                }
+                
+                if (!foundHeader) {
+                    cleanedLines.push(line);
+                    inCodeBlock = true;
+                }
+                // If we found a header, skip adding the opening code block
+            }
+            continue;
+        }
+
+        if (isMessageHeader) {
+            if (inCodeBlock) {
+                // If we find a header inside a code block, close the block first
+                cleanedLines.push('```');
+                inCodeBlock = false;
+            }
+            cleanedLines.push(line);
+        } else {
+            cleanedLines.push(line);
+        }
+    }
+
+    // Ensure we close any open code block
+    if (inCodeBlock) {
+        cleanedLines.push('```');
+    }
+
+    return cleanedLines.join('\n');
 }
 
 // Main function to convert JSON chat to Markdown
@@ -90,7 +166,8 @@ function convertPayloadToMarkdown(payload) {
         processMessage(mostRecentRootMessage, payload, bits);
     }
 
-    return bits.join("\n");
+    // Clean up the markdown before returning
+    return cleanupMarkdown(bits.join("\n"));
 }
 
 export { convertPayloadToMarkdown };

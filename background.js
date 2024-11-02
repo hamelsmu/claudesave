@@ -61,7 +61,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener((obj) => {
 
 
 function isChatRequest(obj) {
-    return obj.url.endsWith('?tree=True&rendering_mode=raw') && obj.method === 'GET';
+    return obj.url.includes('?tree=True') && obj.method === 'GET';
 }
 
 function isOwnRequest(obj) {

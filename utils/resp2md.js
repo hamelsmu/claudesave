@@ -35,10 +35,19 @@ function processMessage(message, payload, bits) {
     let emoji = message.sender === 'human' ? '🧑' : (message.sender === 'assistant' ? '🤖' : '👤');
     
     bits.push(`## ${emoji} ${message.sender} _(${formatDate(message.created_at)})_`);
-    bits.push(message.text
-        .replace(/<antArtifact/g, "```\n<antArtifact")
-        .replace(/<\/antArtifact>/g, "</antArtifact>\n```")
-    );
+    
+    // Handle new content array structure
+    if (message.content) {
+        message.content.forEach((content) => {
+            if (content.type === 'text') {
+                // Strip out antArtifact tags and just keep the content
+                let text = content.text
+                    .replace(/<antArtifact[^>]*>/g, '')
+                    .replace(/<\/antArtifact>/g, '');
+                bits.push(text);
+            }
+        });
+    }
 
     // Handle extracted_content from attachments
     if (message.attachments) {

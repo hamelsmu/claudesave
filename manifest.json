@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "ClaudeSave",
-    "version": "1.7",
+    "version": "1.8",
     "description": "A Chrome extension that saves conversations with Claude to gists.",
     "permissions": ["storage", "tabs", "webRequest", "clipboardWrite"],
     "host_permissions": ["https://claude.ai/*", "https://api.claude.ai/*"],

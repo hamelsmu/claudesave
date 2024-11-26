@@ -50,6 +50,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 });
 
 chrome.webRequest.onBeforeSendHeaders.addListener((obj) => {
+    console.log("Intercepted stuff:", obj);
     if (isChatRequest(obj) && !isOwnRequest(obj)) {
         fetchChat(obj).then(resp => {
             if (resp.chat_messages && resp.uuid) {
@@ -57,7 +58,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener((obj) => {
             }
         });
     }
-}, {urls: ["https://api.claude.ai/api/*chat_conversations*"]}, ['requestHeaders', 'extraHeaders']);
+}, {urls: ["https://claude.ai/api/*chat_conversations*"]}, ['requestHeaders', 'extraHeaders']);
 
 
 function isChatRequest(obj) {

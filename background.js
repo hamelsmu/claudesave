@@ -50,7 +50,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
 });
 
 chrome.webRequest.onBeforeSendHeaders.addListener((obj) => {
-    console.log("Intercepted stuff:", obj);
     if (isChatRequest(obj) && !isOwnRequest(obj)) {
         fetchChat(obj).then(resp => {
             if (resp.chat_messages && resp.uuid) {
